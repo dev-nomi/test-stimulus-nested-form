@@ -1,0 +1,49 @@
+<%= form_with(model: article, data: { controller: 'nested-form', nested_form_wrapper_selector_value: '.nested-form-wrapper' } ) do |form| %>
+  <% if article.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(article.errors.count, "error") %> prohibited this article from being saved:</h2>
+
+      <ul>
+        <% article.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :title, style: "display: block" %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :content, style: "display: block" %>
+    <%= form.text_area :content %>
+  </div>
+
+  <div>
+    <template data-nested-form-target="template">
+      <%= form.fields_for :comments, Comment.new, child_index: 'NEW_RECORD' do |comment_fields| %>
+        <%= render "comment_form", f: comment_fields %>
+      <% end %>
+    </template>
+
+    <%= form.fields_for :comments do |comment_fields| %>
+      <%= render "comment_form", f: comment_fields %>
+    <% end %>
+
+    <!-- Inserted elements will be injected before that target. -->
+    <div data-nested-form-target="target"></div>
+
+    <button type="button" data-action="nested-form#add">Add comment</button>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
